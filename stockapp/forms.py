@@ -7,5 +7,5 @@ from .models import Stock
 class StockCreateform(forms.ModelForm):
     class Meta:
         model = Stock
-        fields = ['category','item_name','quantity','issued_by']
+        fields = ['category','item_name','quantity']
     
