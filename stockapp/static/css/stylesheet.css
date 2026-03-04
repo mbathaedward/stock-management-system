@@ -1,3 +1,37 @@
 body{
     background-color: aqua;
 }
+
+/*align items to the center of the page*/
+.table {
+    font-size: 13pt;
+    text-align: center;
+    width: 95%;
+    margin: 0 auto;
+    
+}
+
+/*make altering colors for the table rows*/
+table.table > tbody > tr:nth-of-type(odd) > td {
+    background-color: #88CAE4 !important;
+}
+
+table.table > tbody > tr:nth-of-type(even) > td {
+    background-color: #dae5f4 !important;
+}
+
+
+table.table > thead > tr > th {
+    background-color: #337a33 !important;
+    color: white !important;
+}
+h2 {
+    text-align: center;
+}
+.display_table{
+    border-bottom-left-radius: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 20px;
+    box-shadow: 12px 12px 20px 6px #020405;
+}

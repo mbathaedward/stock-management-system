@@ -1,19 +1,28 @@
 {% extends 'home.html' %}
 {% load static %}
+
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link  href="{% static 'css/stylesheet.css' %}" rel="stylesheet">
-    <title>{{title}}</title>
-</head>
-<body>
+
+<h2>List of Items</h2>
+
+<div class="display_table">
+<table class="table">
+    <thead>
+        <tr>
+            <th>Count</th>
+            <th>Category</th>
+            <th>Item Name</th>
+            <th>Quantity In Store</th>
+        </tr>
+    </thead>
     {% for instance in queryset %}
-    {{ instance.item_name}} {{instance.quantity}}<br>
+    <tr>
+        <td>{{forloop.counter}}</td>
+        <td>{{instance.category}}</td>
+        <td>{{instance.item_name}}</td>
+        <td>{{instance.quantity}}</td>
+    </tr>
     {% endfor %}
-    
-</body>
-</html>
-{% endblock content %}
+</table>
+</div>
+{% endblock content%}
