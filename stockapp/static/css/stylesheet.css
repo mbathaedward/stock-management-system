@@ -22,7 +22,7 @@ table.table > tbody > tr:nth-of-type(even) > td {
 
 
 table.table > thead > tr > th {
-    background-color: #337a33 !important;
+    background-color: #5048f1 !important;
     color: white !important;
 }
 h2 {
@@ -35,3 +35,4 @@ h2 {
     padding-bottom: 20px;
     box-shadow: 12px 12px 20px 6px #020405;
 }
+

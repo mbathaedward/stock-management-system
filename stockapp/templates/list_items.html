@@ -17,6 +17,7 @@
             <th>Category</th>
             <th>Item Name</th>
             <th>Quantity In Store</th>
+            <th>Delete</th>
         </tr>
     </thead>
     {% for instance in queryset %}
@@ -25,6 +26,7 @@
         <td>{{instance.category}}</td>
         <td><a href="{% url 'update_items' instance.id %}">{{instance.item_name}}</a></td>
         <td>{{instance.quantity}}</td>
+        <td><a href="{% url 'delete_item' instance.id %}"><img  src="{% static 'img/trash-fill.svg' %}" alt=""></a></td>
     </tr>
     {% endfor %}
 </table>

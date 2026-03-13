@@ -23,6 +23,7 @@ urlpatterns = [
     path('list_items/', views.list_items, name='list_items'),
     path('add_items/', views.add_items, name='add_items'),
     path('update_items/<str:pk>/',views.update_items, name='update_items'),
+    path('delete_item/<str:pk>/',views.delete_item, name='delete_item'),
 
     path('admin/', admin.site.urls),
 ]
