@@ -15,14 +15,10 @@ def list_items(request):
     header = 'List of list_items'
     form = StockSearchForm(request.POST or None)
     queryset = Stock.objects.all()
-    context = {
-        'header': header,
-        'queryset': queryset,
-        "form":form
-    }
+    
     if request.method == 'POST':
         queryset = Stock.objects.filter(
-            category__icontains=form['category'].value(),
+            category=form['category'].value(),
             item_name__icontains=form['item_name'].value()
 
         )

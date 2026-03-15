@@ -10,24 +10,40 @@ class StockCreateform(forms.ModelForm):
         model = Stock
         fields = ['category','item_name','quantity']
 
-
+#validate category fields
     def clean_category(self):
         category = self.cleaned_data.get('category')
         if not category:
             raise forms.ValidationError("This is field is required!")
- #check if category exist       
-        for instance in Stock.objects.all():
-            if instance.category == category:
-                raise forms.ValidationError(category + "is already created")
-
         return category
+#validate item_name fields
+ 
+     
     def clean_item_name(self):
         item_name = self.cleaned_data.get('item_name')
         
         if not item_name:
             raise forms.ValidationError("This is field is required!")
         return item_name
+    
+# Cross-field validation: prevent duplicates
+    def clean(self):
+        cleaned_data = super().clean()
+        category = cleaned_data.get('category')
+        item_name = cleaned_data.get('item_name')
 
+        if category and item_name:
+             # Check if a Stock item with the same category + item_name already exists
+             if Stock.objects.filter(category=category, item_name=item_name).exists():
+                 raise forms.ValidationError(f"'{item_name}' already exist in '{category}'")
+             return cleaned_data
+
+
+
+    
+
+     
+        
 
 
 
