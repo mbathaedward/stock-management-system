@@ -3,7 +3,18 @@
 {% load static %}
 {% block content %}
 
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{ message.tags}}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
 <h2>{{header}}</h2>
+
+
 <form  method="POST" action="">{% csrf_token %}
 {{form|crispy}}
 <input type="submit" value="search">
@@ -17,6 +28,8 @@
             <th>Category</th>
             <th>Item Name</th>
             <th>Quantity In Store</th>
+            <th>Timestamp</th>
+            <th>Last Updated</th>
             <th>Delete</th>
         </tr>
     </thead>
@@ -25,7 +38,10 @@
         <td>{{forloop.counter}}</td>
         <td>{{instance.category}}</td>
         <td><a href="{% url 'update_items' instance.id %}">{{instance.item_name}}</a></td>
-        <td>{{instance.quantity}}</td>
+        <td><a href="{% url 'stock_detail' instance.id %}">{{instance.quantity}}</a></td>
+        <td>{{instance.timestamp|date:"F j, Y, g:i a"}}.</td>
+        <td>{{instance.last_updated}}</td>
+
         <td><a href="{% url 'delete_item' instance.id %}"><img  src="{% static 'img/trash-fill.svg' %}" alt=""></a></td>
     </tr>
     {% endfor %}

@@ -35,4 +35,9 @@ h2 {
     padding-bottom: 20px;
     box-shadow: 12px 12px 20px 6px #020405;
 }
-
+.messages {
+    list-style: none;
+    background-color: #2e6d2e;
+    color: white;
+    box-shadow: 12px 12px 12px #e61c66;
+}

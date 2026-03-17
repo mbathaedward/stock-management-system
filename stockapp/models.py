@@ -29,8 +29,10 @@ class Stock(models.Model):
     phone_number = models.CharField(max_length=100, blank=True, null=True)
     created_by = models.CharField(max_length=100, blank=True, null=True)
     reorder_level = models.IntegerField(default=0, blank=True, null=True)
-    last_updated = models.DateField(auto_now_add=False, auto_now=True)
+    last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
     export_to_csv = models.BooleanField(default=False)
+
 
     def __str__(self):
         return f"{self.item_name} - {self.category  } - {self.quantity}"

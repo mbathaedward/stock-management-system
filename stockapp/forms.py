@@ -39,20 +39,11 @@ class StockCreateform(forms.ModelForm):
              return cleaned_data
 
 
-
-    
-
-     
-        
-
-
-
-
-
 #-------------------------------------------
 # create a search form to search for products
 # -------------------------------------------    
 class StockSearchForm(forms.ModelForm):
+    export_to_csv = forms.BooleanField(required=False)
     class Meta:
         model = Stock
         fields = ['category','item_name']
@@ -61,3 +52,14 @@ class StockUpdateform(forms.ModelForm):
     class Meta:
         model = Stock
         fields = ['category','item_name','quantity']
+
+class IssueForm(forms.ModelForm):
+    class Meta:
+        model = Stock
+        fields = ['issue_quantity', 'issue_to']
+
+class RecieveItem(forms.ModelForm):
+    class Meta:
+        model = Stock
+        fields = ['recieve_quantity']
+
