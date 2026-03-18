@@ -87,23 +87,73 @@ def stock_detail(request,pk):
     return render(request, 'stock_detail.html',context)
 
 
-#------------------------------
-#view to issue and receive item
-#-------------------------------
+
 
 def issue_item(request, pk):
-     queryset = get_object_or_404(Stock, id=pk)
-     form = IssueForm(request.POST or None,instance=queryset)
-     if form.is_valid():
-         instance = form.save(commit=False)
-         instance.quantity -= instance.issue_quantity
-         instance.issue_by = str(request.user)
-         messages.success(request, "ISSUED SUCCESSFULLY" + str(instance.quantity) + "" + str(instance.item_name) + "s now left instore"
-                          ) 
-         instance.save()
-         return redirect('/stock_detail/'+str(instance.id))
-         
+    queryset = get_object_or_404(Stock, id=pk)
+    form = IssueForm(request.POST or None, instance=queryset)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+
+        # Reduce quantity
+        instance.quantity -= instance.issue_quantity
+
+        # instance.issue_by = str(request.user)
+
+        instance.save()
+
+        messages.success(
+            request,
+            f"ISSUED SUCCESSFULLY. {instance.quantity} {instance.item_name}(s) now left in store"
+        )
+
+        return redirect('/stock_detail/' + str(instance.id))
+
+    context = {
+        "title": 'Issue ' + str(queryset.item_name),
+        "queryset": queryset,
+        "form": form,
+        "username": str(request.user)
+    }
+
+    return render(request, 'add_items.html', context)
+
+
+def recieve_item(request, pk):
+    queryset = get_object_or_404(Stock, id=pk)
+    form = IssueForm(request.POST or None, instance=queryset)
+
+    if form.is_valid():
+        instance = form.save(commit=False)
+
+        # Increase quantity
+        instance.quantity += instance.issue_quantity
+
+        instance.issue_by = str(request.user)
+        instance.save()
+
+        messages.success(
+            request,
+            f"RECEIVED SUCCESSFULLY. {instance.quantity} {instance.item_name}(s) now in store"
+        )
+
+        return redirect('/stock_detail/' + str(instance.id))
+
+    context = {
+        "title": 'Receive ' + str(queryset.item_name),
+        "queryset": queryset,
+        "form": form,
+        "username": str(request.user)
+    }
+
+    return render(request, 'add_items.html', context)
+
+
     
+
+       
+  
     
     
 

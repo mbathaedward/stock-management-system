@@ -26,6 +26,7 @@ class Stock(models.Model):
     recieved_by = models.CharField(max_length=100, blank=True, null=True)
     issue_quantity = models.IntegerField(default=0, blank=True, null=True)
     issued_by = models.CharField(max_length=100, blank=True, null=True)
+    issue_to = models.CharField(max_length=100, blank=True, null=True) 
     phone_number = models.CharField(max_length=100, blank=True, null=True)
     created_by = models.CharField(max_length=100, blank=True, null=True)
     reorder_level = models.IntegerField(default=0, blank=True, null=True)
