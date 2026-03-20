@@ -28,17 +28,29 @@
             <th>Category</th>
             <th>Item Name</th>
             <th>Quantity In Store</th>
+             <th>Reorder Level</th>
             <th>Timestamp</th>
             <th>Last Updated</th>
             <th>Delete</th>
         </tr>
     </thead>
+    
     {% for instance in queryset %}
     <tr>
+        
         <td>{{forloop.counter}}</td>
         <td>{{instance.category}}</td>
         <td><a href="{% url 'update_items' instance.id %}">{{instance.item_name}}</a></td>
-        <td><a href="{% url 'stock_detail' instance.id %}">{{instance.quantity}}</a></td>
+        <td>
+            {% if instance.quantity <= instance.reorder_level %}
+            <div style="background-color:orange ;">
+                <a href="{% url 'stock_detail' instance.id %}">{{ instance.quantity }}</a>
+            </div>
+            {% else %} 
+            <a href="{% url 'stock_detail' instance.id %}">{{instance.quantity}}</a>
+            {% endif %}
+        </td>
+        <td><a href="{% url 'reorder_level' instance.id %}">{{ instance.reorder_level }}</a></td>
         <td>{{instance.timestamp|date:"F j, Y, g:i a"}}.</td>
         <td>{{instance.last_updated}}</td>
 

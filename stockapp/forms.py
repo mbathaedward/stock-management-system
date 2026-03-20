@@ -63,3 +63,8 @@ class RecieveItem(forms.ModelForm):
         model = Stock
         fields = ['recieve_quantity']
 
+class ReorderLevelForm(forms.ModelForm):
+    class Meta:
+        model = Stock
+        fields = ['reorder_level']
+
