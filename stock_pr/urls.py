@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from stockapp import views
+from django.urls import include
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -28,7 +30,9 @@ urlpatterns = [
     path('issue_item/<str:pk>/',views.issue_item, name='issue_item'),
     path('recieve_item/<str:pk>/',views.recieve_item, name='recieve_item'),
     path('reorder_level/<str:pk>/',views.reorder_level, name='reorder_level'),
-
-
     path('admin/', admin.site.urls),
+
+    path('accounts/', include('registration.backends.default.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
+    # path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]

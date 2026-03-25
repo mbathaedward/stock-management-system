@@ -44,3 +44,6 @@ h2 {
     color: white;
     box-shadow: 12px 12px 12px #e61c66;
 }
+.h3-center {
+    text-align: center;
+}

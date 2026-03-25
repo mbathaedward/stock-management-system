@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'registration',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -87,7 +88,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'stockmgmt',
         'USER': 'mbatha',
-        'PASSWORD': 'Edu30056155'
+        'PASSWORD': 'Edu30056155',
+               
     }
 }
 
@@ -133,3 +135,9 @@ STATIC_URL = 'static/'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+ACCOUNT_ACTIVATION_DAYS = 7
+REGISTRATION_AUTO_LOGIN = True
+SITE_ID = 1
+LOGOUT_REDIRECT_URL = 'login'
+LOGIN_REDIRECT_URL = '/'
