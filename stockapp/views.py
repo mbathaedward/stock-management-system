@@ -6,6 +6,7 @@ import csv
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from .forms import IssueForm,RecieveItem,ReorderLevelForm
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def home(request):
@@ -15,7 +16,7 @@ def home(request):
 
     }
     return render(request, 'home.html', context)
-
+@login_required
 def list_items(request):
     header = 'List of list_items'
     form = StockSearchForm(request.POST or None)
@@ -43,7 +44,7 @@ def list_items(request):
     } 
 
     return render(request, 'list_items.html',context)
-
+@login_required
 def add_items(request):
     form = StockCreateform(request.POST or None)
     if form.is_valid():
@@ -55,7 +56,7 @@ def add_items(request):
         "title": "Add Item"
     }
     return render(request,'add_items.html',context)
-
+@login_required
 def update_items(request, pk):
     queryset = Stock.objects.get(id=pk)
     form = StockUpdateform(instance=queryset)#create form with prefilled data of specific stock item
@@ -70,7 +71,7 @@ def update_items(request, pk):
             'form':form
         }
     return render(request,'add_items.html',context)
-
+@login_required
 def delete_item(request, pk):
     queryset = Stock.objects.get(id=pk)
     if request.method == 'POST':

@@ -58,7 +58,7 @@ ROOT_URLCONF = 'stock_pr.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -89,10 +89,9 @@ DATABASES = {
         'NAME': 'stockmgmt',
         'USER': 'mbatha',
         'PASSWORD': 'Edu30056155',
-               
+             
     }
 }
-
 
 
 
@@ -141,3 +140,5 @@ REGISTRATION_AUTO_LOGIN = True
 SITE_ID = 1
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_REDIRECT_URL = '/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
