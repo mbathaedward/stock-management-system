@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from .models import Stock
+from .models import Stock,StockHistory
 from .forms import StockCreateform,StockSearchForm,StockUpdateform
 from django.http import HttpResponse 
 import csv
@@ -96,6 +96,7 @@ def issue_item(request, pk):
 
     if form.is_valid():
         instance = form.save(commit=False)
+        instance.receive_quantity = 0
 
         # Reduce quantity
         instance.quantity -= instance.issue_quantity
@@ -127,6 +128,7 @@ def recieve_item(request, pk):
 
     if form.is_valid():
         instance = form.save(commit=False)
+        instance.issue_quantity = 0
 
         # Increase quantity
         instance.quantity += instance.issue_quantity
@@ -164,6 +166,16 @@ def reorder_level(request,pk):
         "form":form
     }
     return render(request, "add_items.html", context)
+
+@login_required
+def list_history(request):
+    header = 'LIST OF ITEMS'
+    queryset = StockHistory.objects.all()
+    context = {
+        "header": header,
+        "queryset":queryset
+    }
+    return render(request, 'list_history.html', context)
 
     
     
