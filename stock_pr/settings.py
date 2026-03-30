@@ -89,6 +89,8 @@ DATABASES = {
         'NAME': 'stockmgmt',
         'USER': 'mbatha',
         'PASSWORD': 'Edu30056155',
+         'HOST': 'localhost',  # or your MySQL host
+        'PORT': '3306',
              
     }
 }

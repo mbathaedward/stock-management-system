@@ -96,7 +96,7 @@ def issue_item(request, pk):
 
     if form.is_valid():
         instance = form.save(commit=False)
-        instance.receive_quantity = 0
+        instance.recieve_quantity = 0 
 
         # Reduce quantity
         instance.quantity -= instance.issue_quantity
@@ -128,12 +128,12 @@ def recieve_item(request, pk):
 
     if form.is_valid():
         instance = form.save(commit=False)
-        instance.issue_quantity = 0
+        instance.issue_quantity = 0 
 
         # Increase quantity
-        instance.quantity += instance.issue_quantity
+        instance.quantity += instance.recieve_quantity
 
-        instance.issue_by = str(request.user)
+        instance.recieved_by = str(request.user)
         instance.save()
 
         messages.success(
