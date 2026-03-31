@@ -1,116 +1,144 @@
-from django.shortcuts import render,redirect
-from .models import Stock,StockHistory
-from .forms import StockCreateform,StockSearchForm,StockUpdateform
-from django.http import HttpResponse 
-import csv
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
 from django.contrib import messages
-from django.shortcuts import get_object_or_404
-from .forms import IssueForm,RecieveItem,ReorderLevelForm
 from django.contrib.auth.decorators import login_required
+import csv
 
-# Create your views here.
+from .models import Stock, StockHistory
+from .forms import (
+    StockCreateform,
+    StockSearchForm,
+    StockUpdateform,
+    IssueForm,
+    RecieveItem,
+    ReorderLevelForm
+)
+
+# -----------------------
+# HOME PAGE
+# -----------------------
 def home(request):
-    title = 'welcome: This is the home page'
-    context = {
-        'title': title
-
-    }
+    context = {'title': 'Welcome: This is the home page'}
     return render(request, 'home.html', context)
+
+# -----------------------
+# LIST ITEMS
+# -----------------------
 @login_required
 def list_items(request):
-    header = 'List of list_items'
+    header = 'List of Items'
     form = StockSearchForm(request.POST or None)
     queryset = Stock.objects.all()
-    
+
     if request.method == 'POST':
         queryset = Stock.objects.filter(
             category=form['category'].value(),
             item_name__icontains=form['item_name'].value()
-
         )
+
+    # Export CSV
     if form['export_to_csv'].value() == True:
         response = HttpResponse(content_type='text/csv')
-        response['content-Disposition'] = 'attachment; filename="LIst of Stock.csv"'
+        response['Content-Disposition'] = 'attachment; filename="List_of_Stock.csv"'
         writer = csv.writer(response)
-        writer.writerow(['CATEGORY', 'ITEM NAME','QUANTITY'])
-        instance = queryset
-        for stock in instance:
-            writer.writerow([stock.category,stock.item_name,stock.quantity])
+        writer.writerow(['CATEGORY', 'ITEM NAME', 'QUANTITY'])
+        for stock in queryset:
+            writer.writerow([stock.category, stock.item_name, stock.quantity])
         return response
-    context = {
-        "header":header,
-        "queryset":queryset,
-        "form":form
-    } 
 
-    return render(request, 'list_items.html',context)
+    context = {
+        "header": header,
+        "queryset": queryset,
+        "form": form
+    }
+    return render(request, 'list_items.html', context)
+
+# -----------------------
+# ADD ITEM
+# -----------------------
 @login_required
 def add_items(request):
     form = StockCreateform(request.POST or None)
     if form.is_valid():
         form.save()
-        messages.success(request, "successfuly added items")
+        messages.success(request, "Successfully added item")
         return redirect('list_items')
-    context = {
-        "form": form,
-        "title": "Add Item"
-    }
-    return render(request,'add_items.html',context)
+    return render(request, 'add_items.html', {'form': form, 'title': 'Add Item'})
+
+# -----------------------
+# UPDATE ITEM
+# -----------------------
 @login_required
 def update_items(request, pk):
-    queryset = Stock.objects.get(id=pk)
-    form = StockUpdateform(instance=queryset)#create form with prefilled data of specific stock item
-    if request.method == 'POST':
-        form = StockUpdateform(request.POST,instance=queryset)#populate form with submitted data   
+    queryset = get_object_or_404(Stock, id=pk)
+    form = StockUpdateform(instance=queryset)
 
+    if request.method == 'POST':
+        form = StockUpdateform(request.POST, instance=queryset)
         if form.is_valid():
-            form.save()  
-            messages.success(request, "succesfully updated")
-            return redirect('/list_items')
-    context = {
-            'form':form
-        }
-    return render(request,'add_items.html',context)
+            form.save()
+            messages.success(request, "Successfully updated item")
+            return redirect('list_items')
+
+    return render(request, 'add_items.html', {'form': form})
+
+# -----------------------
+# DELETE ITEM
+# -----------------------
 @login_required
 def delete_item(request, pk):
-    queryset = Stock.objects.get(id=pk)
+    queryset = get_object_or_404(Stock, id=pk)
     if request.method == 'POST':
         queryset.delete()
-        messages.success(request, "Deleted succesfully")
-        return redirect('/list_items')
-    return render(request, 'delete_item.html')
+        messages.success(request, "Deleted successfully")
+        return redirect('list_items')
+    return render(request, 'delete_item.html', {'queryset': queryset})
 
-def stock_detail(request,pk):
+# -----------------------
+# STOCK DETAIL
+# -----------------------
+@login_required
+def stock_detail(request, pk):
     queryset = get_object_or_404(Stock, id=pk)
-    context = {
-        'queryset':queryset,
-    }
-    return render(request, 'stock_detail.html',context)
+    return render(request, 'stock_detail.html', {'queryset': queryset})
 
-
-
-
+# -----------------------
+# ISSUE ITEM
+# -----------------------
+@login_required
 def issue_item(request, pk):
     queryset = get_object_or_404(Stock, id=pk)
     form = IssueForm(request.POST or None, instance=queryset)
 
     if form.is_valid():
         instance = form.save(commit=False)
-        instance.recieve_quantity = 0 
+        instance.recieve_quantity = 0
 
-        # Reduce quantity
-        instance.quantity -= instance.issue_quantity
+        # Prevent issuing more than available
+        if instance.issue_quantity > queryset.quantity:
+            messages.error(
+                request,
+                f"Cannot issue {instance.issue_quantity} {queryset.item_name}(s). Only {queryset.quantity} left in store!"
+            )
+            return redirect('stock_detail', pk=queryset.id)
 
-        # instance.issue_by = str(request.user)
+        # Reduce stock
+        queryset.quantity -= instance.issue_quantity
+        queryset.save()
 
-        instance.save()
+        # Log to history
+        StockHistory.objects.create(
+            stock=queryset,
+            issued_quantity=instance.issue_quantity,
+            received_quantity=0,
+            user=str(request.user)
+        )
 
         messages.success(
             request,
-            f"ISSUED SUCCESSFULLY. {instance.quantity} {instance.item_name}(s) now left in store"
+            f"ISSUED SUCCESSFULLY. {queryset.quantity} {queryset.item_name}(s) now left in store"
         )
-
-        return redirect('/stock_detail/' + str(instance.id))
+        return redirect('stock_detail', pk=queryset.id)
 
     context = {
         "title": 'Issue ' + str(queryset.item_name),
@@ -118,30 +146,37 @@ def issue_item(request, pk):
         "form": form,
         "username": str(request.user)
     }
-
     return render(request, 'add_items.html', context)
 
-
+# -----------------------
+# RECEIVE ITEM
+# -----------------------
+@login_required
 def recieve_item(request, pk):
     queryset = get_object_or_404(Stock, id=pk)
-    form = IssueForm(request.POST or None, instance=queryset)
+    form = RecieveItem(request.POST or None, instance=queryset)
 
     if form.is_valid():
         instance = form.save(commit=False)
-        instance.issue_quantity = 0 
+        instance.issue_quantity = 0
 
-        # Increase quantity
-        instance.quantity += instance.recieve_quantity
+        # Increase stock
+        queryset.quantity += instance.recieve_quantity
+        queryset.save()
 
-        instance.recieved_by = str(request.user)
-        instance.save()
+        # Log to history
+        StockHistory.objects.create(
+            stock=queryset,
+            issued_quantity=0,
+            received_quantity=instance.recieve_quantity,
+            user=str(request.user)
+        )
 
         messages.success(
             request,
-            f"RECEIVED SUCCESSFULLY. {instance.quantity} {instance.item_name}(s) now in store"
+            f"RECEIVED SUCCESSFULLY. {queryset.quantity} {queryset.item_name}(s) now in store"
         )
-
-        return redirect('/stock_detail/' + str(instance.id))
+        return redirect('stock_detail', pk=queryset.id)
 
     context = {
         "title": 'Receive ' + str(queryset.item_name),
@@ -149,43 +184,32 @@ def recieve_item(request, pk):
         "form": form,
         "username": str(request.user)
     }
-
     return render(request, 'add_items.html', context)
 
-
-def reorder_level(request,pk):
+# -----------------------
+# REORDER LEVEL
+# -----------------------
+@login_required
+def reorder_level(request, pk):
     queryset = get_object_or_404(Stock, id=pk)
-    form = ReorderLevelForm(request.POST or None,instance=queryset)
+    form = ReorderLevelForm(request.POST or None, instance=queryset)
+
     if form.is_valid():
         instance = form.save(commit=False)
         instance.save()
-        messages.success(request,"Reorder level " + str(instance.item_name) +  "is updated to" + str(instance.reorder_level) )
-        return redirect("/list_items")
-    context = {
-        "instance":queryset,
-        "form":form
-    }
-    return render(request, "add_items.html", context)
+        messages.success(
+            request,
+            f"Reorder level for {instance.item_name} updated to {instance.reorder_level}"
+        )
+        return redirect('list_items')
 
+    return render(request, 'add_items.html', {'form': form, 'instance': queryset})
+
+# -----------------------
+# LIST HISTORY
+# -----------------------
 @login_required
 def list_history(request):
-    header = 'LIST OF ITEMS'
+    header = 'List of Stock History'
     queryset = StockHistory.objects.all()
-    context = {
-        "header": header,
-        "queryset":queryset
-    }
-    return render(request, 'list_history.html', context)
-
-    
-    
-
-
-    
-
-       
-  
-    
-    
-
-
+    return render(request, 'list_history.html', {'header': header, 'queryset': queryset})
