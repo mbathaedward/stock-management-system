@@ -10,7 +10,7 @@ from .forms import (
     StockSearchForm,
     StockUpdateform,
     IssueForm,
-    RecieveItem,
+    ReceiveItem,
     ReorderLevelForm
 )
 
@@ -112,79 +112,86 @@ def issue_item(request, pk):
 
     if form.is_valid():
         instance = form.save(commit=False)
-        instance.recieve_quantity = 0
+        instance.received_quantity = 0
 
         # Prevent issuing more than available
-        if instance.issue_quantity > queryset.quantity:
+        if instance.issued_quantity > queryset.quantity:
             messages.error(
                 request,
-                f"Cannot issue {instance.issue_quantity} {queryset.item_name}(s). Only {queryset.quantity} left in store!"
+                f"Cannot issue {instance.issued_quantity} {queryset.item_name}(s). Only {queryset.quantity} left!"
             )
             return redirect('stock_detail', pk=queryset.id)
 
         # Reduce stock
-        queryset.quantity -= instance.issue_quantity
+        queryset.quantity -= instance.issued_quantity
+        queryset.issued_quantity = instance.issued_quantity
+        queryset.issued_by = str(request.user)
         queryset.save()
 
-        # Log to history
+        # Log history
         StockHistory.objects.create(
-            stock=queryset,
-            issued_quantity=instance.issue_quantity,
+            category=queryset.category,
+            item_name=queryset.item_name,
+            quantity=queryset.quantity,
+            issued_quantity=instance.issued_quantity,
             received_quantity=0,
-            user=str(request.user)
+            issued_by=str(request.user),
+            issue_to=instance.issue_to,
         )
 
         messages.success(
             request,
-            f"ISSUED SUCCESSFULLY. {queryset.quantity} {queryset.item_name}(s) now left in store"
+            f"ISSUED SUCCESSFULLY. {queryset.quantity} left in store"
         )
         return redirect('stock_detail', pk=queryset.id)
 
-    context = {
+    return render(request, 'add_items.html', {
         "title": 'Issue ' + str(queryset.item_name),
         "queryset": queryset,
         "form": form,
         "username": str(request.user)
-    }
-    return render(request, 'add_items.html', context)
+    })
 
 # -----------------------
 # RECEIVE ITEM
 # -----------------------
 @login_required
-def recieve_item(request, pk):
+def receive_item(request, pk):
     queryset = get_object_or_404(Stock, id=pk)
-    form = RecieveItem(request.POST or None, instance=queryset)
+    form = ReceiveItem(request.POST or None, instance=queryset)
 
     if form.is_valid():
         instance = form.save(commit=False)
-        instance.issue_quantity = 0
+        instance.issued_quantity = 0
 
-        # Increase stock
-        queryset.quantity += instance.recieve_quantity
+        #Increase stock
+        queryset.quantity += instance.received_quantity
+        queryset.received_quantity = instance.received_quantity
+        queryset.received_by = str(request.user)
         queryset.save()
 
-        # Log to history
+        # Log history
         StockHistory.objects.create(
-            stock=queryset,
+            category=queryset.category,
+            item_name=queryset.item_name,
+            quantity=queryset.quantity,
             issued_quantity=0,
-            received_quantity=instance.recieve_quantity,
-            user=str(request.user)
+            received_quantity=instance.received_quantity,
+            received_by=str(request.user),
         )
 
         messages.success(
             request,
-            f"RECEIVED SUCCESSFULLY. {queryset.quantity} {queryset.item_name}(s) now in store"
+            f"RECEIVED SUCCESSFULLY. {queryset.quantity} now in store"
         )
         return redirect('stock_detail', pk=queryset.id)
 
-    context = {
+    return render(request, 'add_items.html', {
         "title": 'Receive ' + str(queryset.item_name),
         "queryset": queryset,
         "form": form,
         "username": str(request.user)
-    }
-    return render(request, 'add_items.html', context)
+    })
 
 # -----------------------
 # REORDER LEVEL
