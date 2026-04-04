@@ -25,6 +25,8 @@
              <th>QUANTITY IN STORE</th>
             <th>ISSUE QUANTITY</th>
             <th>RECEIVE QUANTITY</th>
+            <th>Issued By</th>
+            <th>Received By</th>
             <th>LAST UPDATED</th>
         </tr>
     </thead>
@@ -35,8 +37,10 @@
         <td>{{instance.category}}</td>
         <td>{{instance.item_name}}</td>
         <td>{{instance.quantity}}</td>
-        <td>{{instance.issue_quantity}}</td>
-        <td>{{instance.receive_quantity}}</td>
+        <td>{{instance.issued_quantity}}</td>
+        <td>{{instance.received_quantity}}</td>
+        <td>{{instance.issued_by}}</td>
+        <td>{{instance.received_by}}</td>
         <td>{{instance.last_updated}}</td>
     </tr>
     {% endfor %}

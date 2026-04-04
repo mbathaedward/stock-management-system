@@ -49,6 +49,14 @@ class StockHistory(models.Model):
     issue_to = models.CharField(max_length=100, blank=True, null=True) 
     last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+
+    def __str__(self):
+        return self.issued_by.username
+
+   
+
+
     
     class Meta:
         db_table = 'StockHistory'
