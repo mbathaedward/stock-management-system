@@ -218,5 +218,23 @@ def reorder_level(request, pk):
 @login_required
 def list_history(request):
     header = 'List of Stock History'
-    queryset = StockHistory.objects.all()
-    return render(request, 'list_history.html', {'header': header, 'queryset': queryset})
+    queryset = StockHistory.objects.all()            
+    form = StockSearchForm(request.POST or None)
+    
+    if request.method == 'POST':
+        category = form['category'].value()
+        queryset = StockHistory.objects.filter(
+            item_name__icontains=form['item_name'].value()
+        )
+        if (category !=''):
+            queryset = queryset.filter(category_id=category)
+    context = {
+                "form":form,
+                "header":header,
+                "queryset":queryset
+            }
+               
+            
+
+
+    return render(request, 'list_history.html', context)

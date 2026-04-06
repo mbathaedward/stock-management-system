@@ -11,8 +11,12 @@
 </ul>
 {% endif %}
 
-
 <h2>{{header}}</h2>
+<form action="" method="POST">{% csrf_token %}
+    {{form|crispy}}
+    <input type="submit" value="Search"/>
+
+</form>     
 
 <div class="display_table">
 <table class="table">

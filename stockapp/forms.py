@@ -1,11 +1,10 @@
 from django import forms
-from .models import Stock
+from .models import Stock,Category
 
 #-------------------------------------------------------
 #create a form here to directly update data in the model
 #--------------------------------------------------------
 class StockCreateform(forms.ModelForm):
-
     class Meta:
         model = Stock
         fields = ['category','item_name','quantity']
@@ -44,6 +43,11 @@ class StockCreateform(forms.ModelForm):
 # -------------------------------------------    
 class StockSearchForm(forms.ModelForm):
     export_to_csv = forms.BooleanField(required=False)
+    category = forms.ModelChoiceField(
+        queryset=Category.objects.all(),
+        required=False
+    )
+    item_name = forms.CharField(required=False)
     class Meta:
         model = Stock
         fields = ['category','item_name']
