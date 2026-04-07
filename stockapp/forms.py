@@ -1,5 +1,5 @@
 from django import forms
-from .models import Stock,Category
+from .models import Stock,Category,StockHistory
 
 #-------------------------------------------------------
 #create a form here to directly update data in the model
@@ -51,6 +51,14 @@ class StockSearchForm(forms.ModelForm):
     class Meta:
         model = Stock
         fields = ['category','item_name']
+
+class StockHistorySearchForm(forms.ModelForm):
+    export_to_csv = forms.BooleanField(required=False)
+    start_date = forms.DateTimeField(required=False)
+    end_date = forms.DateTimeField(required=False)
+    class Meta:
+        model = StockHistory
+        fields = ['category','item_name','start_date','end_date']
 
 class StockUpdateform(forms.ModelForm):
     class Meta:

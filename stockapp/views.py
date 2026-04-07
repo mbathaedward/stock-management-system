@@ -11,15 +11,20 @@ from .forms import (
     StockUpdateform,
     IssueForm,
     ReceiveItem,
-    ReorderLevelForm
+    ReorderLevelForm,
+    StockHistorySearchForm
+    
 )
 
 # -----------------------
 # HOME PAGE
 # -----------------------
 def home(request):
+    title = "Welcome to home page"
     context = {'title': 'Welcome: This is the home page'}
-    return render(request, 'home.html', context)
+    return redirect('list_items')
+
+    # return render(request, 'home.html', context)
 
 # -----------------------
 # LIST ITEMS
@@ -219,12 +224,17 @@ def reorder_level(request, pk):
 def list_history(request):
     header = 'List of Stock History'
     queryset = StockHistory.objects.all()            
-    form = StockSearchForm(request.POST or None)
+    
+    form = StockHistorySearchForm(request.POST or None)
     
     if request.method == 'POST':
         category = form['category'].value()
         queryset = StockHistory.objects.filter(
-            item_name__icontains=form['item_name'].value()
+            item_name__icontains=form['item_name'].value(),
+            last_updated_range = [
+                form['start_date'].value(),
+                form['end_date'].value()
+            ]
         )
         if (category !=''):
             queryset = queryset.filter(category_id=category)
