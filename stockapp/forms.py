@@ -45,20 +45,33 @@ class StockSearchForm(forms.ModelForm):
     export_to_csv = forms.BooleanField(required=False)
     category = forms.ModelChoiceField(
         queryset=Category.objects.all(),
-        required=False
+        required=False,
+       
     )
     item_name = forms.CharField(required=False)
     class Meta:
         model = Stock
         fields = ['category','item_name']
 
-class StockHistorySearchForm(forms.ModelForm):
+class StockHistorySearchForm(forms.Form):
+    category = forms.ModelChoiceField(
+        queryset=Category.objects.all(),
+        required=False,
+        empty_label="-----"
+    )
+    item_name = forms.CharField(required=False)
+    start_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={'type':'date'})
+
+    )
+    end_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={'type':'date'})
+
+    )
     export_to_csv = forms.BooleanField(required=False)
-    start_date = forms.DateTimeField(required=False)
-    end_date = forms.DateTimeField(required=False)
-    class Meta:
-        model = StockHistory
-        fields = ['category','item_name','start_date','end_date']
+   
 
 class StockUpdateform(forms.ModelForm):
     class Meta:
