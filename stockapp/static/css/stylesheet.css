@@ -1,5 +1,7 @@
 body{
-    background-color: rgb(173, 173, 173)
+    /* background-color: rgb(173, 173, 173); */
+    background-image: url("../img/ulotkidruk-paper-1468883.jpg");
+    
 }
 
 /*align items to the center of the page*/
@@ -50,3 +52,51 @@ h2 {
 .mybutton{
     width: 100%;
 }
+
+
+#version-display{
+    background-color: #e61c66;
+    color: #fff;
+    box-shadow: 5px 12px #abcae6;
+    text-align: center;
+    display: inline;
+    padding: 15px;
+    font-weight: bolder;
+    position: fixed;
+    top: 40px;
+    left: -5px;
+    z-index: 3000;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    margin-top: 70px;
+
+}
+/* modal header */
+.modal-header {
+    padding: 2px 146px;
+    background-color: #e61c66;
+    color: #fff;
+
+}
+/* modal-content */
+.modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin:  0 auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 100%;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 2), 0 6px 20px 0 rgba(0,0, 0, 19)
+}
+.dev-info {
+    width: 50%;
+    text-align: center;
+    font-family: helvetica;
+    font-weight: bold;
+    display: inline;
+}
+.dev-info-logo {
+    width: 50px;
+    float: left;
+}
+
