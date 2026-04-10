@@ -62,6 +62,25 @@
     </tr>
     {% endfor %}
 </table>
+<!-- Pagination -->
+<div class="pagination mt-3">
+
+    {% if queryset.has_previous %}
+        <a href="?page=1" class="btn btn-sm btn-outline-primary">First</a>
+        <a href="?page={{ queryset.previous_page_number }}" class="btn btn-sm btn-outline-primary">Previous</a>
+    {% endif %}
+
+    <span class="mx-2">
+        Page {{ queryset.number }} of {{ queryset.paginator.num_pages }}
+    </span>
+
+    {% if queryset.has_next %}
+        <a href="?page={{ queryset.next_page_number }}" class="btn btn-sm btn-outline-primary">Next</a>
+        <a href="?page={{ queryset.paginator.num_pages }}" class="btn btn-sm btn-outline-primary">Last</a>
+    {% endif %}
+
+</div>
+
 </div><!--second colum-->
 </div><!--end of row-->
 </div>

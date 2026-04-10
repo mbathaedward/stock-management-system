@@ -3,8 +3,8 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import csv
-
 from .models import Stock, StockHistory
+from django.core.paginator import Paginator
 from .forms import (
     StockCreateform,
     StockSearchForm,
@@ -50,6 +50,10 @@ def list_items(request):
         for stock in queryset:
             writer.writerow([stock.category, stock.item_name, stock.quantity])
         return response
+    #pagination starts here
+    paginator = Paginator(queryset, 10)
+    page_number = request.GET.get('page')
+    queryset = paginator.get_page(page_number)
 
     context = {
         "header": header,
