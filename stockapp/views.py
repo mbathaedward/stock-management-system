@@ -34,12 +34,26 @@ def list_items(request):
     header = 'List of Items'
     form = StockSearchForm(request.POST or None)
     queryset = Stock.objects.all()
+   
 
     if request.method == 'POST':
-        queryset = Stock.objects.filter(
-            category=form['category'].value(),
-            item_name__icontains=form['item_name'].value()
-        )
+    
+        category = form['category'].value()
+        item_name = form['item_name'].value()
+
+        if category and item_name:
+            queryset = queryset.filter(
+                category = category,
+                item_name__icontains=item_name
+            )
+        elif category:
+            queryset = queryset.filter(category=category)
+        elif item_name:
+            queryset = queryset.filter(item_name__icontains=item_name)
+
+
+
+        
 
     # Export CSV
     if form['export_to_csv'].value() == True:
