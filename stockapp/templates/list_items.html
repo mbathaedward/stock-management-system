@@ -15,7 +15,7 @@
 <h2>{{header}}</h2>
 <div class="row">
     <div class="col-sm-2">
-<form  method="POST" action="">{% csrf_token %}
+<form  method="GET">
 {{form|crispy}}
 <input class="btn btn-primary mybutton" type="submit" value="search">
 </form>
@@ -65,21 +65,32 @@
 <!-- Pagination -->
 <div class="pagination mt-3">
 
+    {% with request.GET.urlencode as query_string %}
+
     {% if queryset.has_previous %}
-        <a href="?page=1" class="btn btn-sm btn-outline-primary">First</a>
-        <a href="?page={{ queryset.previous_page_number }}" class="btn btn-sm btn-outline-primary">Previous</a>
+    <a href="?{{ query_string }}&page=1"
+        class="btn btn-sm btn-outline-primary">First</a>
+       
+
+     <a href="?{{ query_string }}&page={{ queryset.previous_page_number }}"
+           class="btn btn-sm btn-outline-primary">Previous</a>
+   
+       
+{% endif %}
+
+<span class="mx-2">
+    Page {{ queryset.number }} of {{ queryset.paginator.num_pages }}
+</span>
+
+   {% if queryset.has_next %}
+        <a href="?{{ query_string }}&page={{ queryset.next_page_number }}"
+           class="btn btn-sm btn-outline-primary">Next</a>
+
+        <a href="?{{ query_string }}&page={{ queryset.paginator.num_pages }}"
+           class="btn btn-sm btn-outline-primary">Last</a>
     {% endif %}
 
-    <span class="mx-2">
-        Page {{ queryset.number }} of {{ queryset.paginator.num_pages }}
-    </span>
-
-    {% if queryset.has_next %}
-        <a href="?page={{ queryset.next_page_number }}" class="btn btn-sm btn-outline-primary">Next</a>
-        <a href="?page={{ queryset.paginator.num_pages }}" class="btn btn-sm btn-outline-primary">Last</a>
-    {% endif %}
-
-</div>
+    {% endwith %}
 </div><!--second colum-->
 </div><!--end of row-->
 </div>

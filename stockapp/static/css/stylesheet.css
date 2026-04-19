@@ -1,7 +1,16 @@
 body{
-    /* background-color: rgb(173, 173, 173); */
+     
     background-image: url("../img/ulotkidruk-paper-1468883.jpg");
     
+}
+.row {
+    background-color: rgb(173, 173, 173); 
+    
+}
+h4 {
+    text-align: center;
+    
+
 }
 
 /*align items to the center of the page*/
@@ -39,6 +48,7 @@ h2 {
     padding-right: 5px;
     padding-bottom: 20px;
     box-shadow: 12px 12px 10px 6px #013249;
+    
 }
 .messages {
     list-style: none;
@@ -99,4 +109,6 @@ h2 {
     width: 50px;
     float: left;
 }
+
+
 

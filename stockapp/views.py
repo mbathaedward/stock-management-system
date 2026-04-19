@@ -32,31 +32,27 @@ def home(request):
 @login_required
 def list_items(request):
     header = 'List of Items'
-    form = StockSearchForm(request.POST or None)
+    form = StockSearchForm(request.GET or None)
     queryset = Stock.objects.all()
    
 
-    if request.method == 'POST':
+   #get values from GET
     
-        category = form['category'].value()
-        item_name = form['item_name'].value()
+    category = request.GET.get('category')
+    item_name = request.GET.get('item_name')
 
-        if category and item_name:
-            queryset = queryset.filter(
+    if category and item_name:
+        queryset = queryset.filter(
                 category = category,
                 item_name__icontains=item_name
             )
-        elif category:
+    elif category:
             queryset = queryset.filter(category=category)
-        elif item_name:
+    elif item_name:
             queryset = queryset.filter(item_name__icontains=item_name)
 
-
-
-        
-
     # Export CSV
-    if form['export_to_csv'].value() == True:
+    if request.GET.get("export_to_csv"):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="List_of_Stock.csv"'
         writer = csv.writer(response)
@@ -243,17 +239,16 @@ def list_history(request):
     header = 'List of Stock History'
     queryset = StockHistory.objects.all()            
     
-    form = StockHistorySearchForm(request.POST or None)
+    form = StockHistorySearchForm(request.GET or None)
     
-    if request.method == 'POST':
-        if form.is_valid():
-            category = form.cleaned_data.get('category')
-            item_name = form.cleaned_data.get('item_name')
-            start_date = form.cleaned_data.get('start_date')
-            end_date = form.cleaned_data.get('end_date')   
-            export_to_csv = form.cleaned_data.get('export_to_csv')
+   
+    if form.is_valid():
+            category = request.GET.get('category')
+            item_name = request.GET.get('item_name')
+            start_date = request.GET.get('start_date')
+            end_date = request.GET.get('end_date')   
+            export_to_csv = request.GET.get('export_to_csv')
 
-            queryset = StockHistory.objects.all()
 
            
             if item_name:
@@ -295,6 +290,11 @@ def list_history(request):
                     ])
 
                 return response 
+     # pagination
+    paginator = Paginator(queryset, 10)
+    page = request.GET.get('page')
+    queryset = paginator.get_page(page)
+            
 
     context = {
         "form": form,

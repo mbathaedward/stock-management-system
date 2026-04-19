@@ -14,7 +14,7 @@
 <h2>{{header}}</h2>
 <div class="row">
     <div class="col-sm-2">
-<form action="" method="POST">{% csrf_token %}
+<form  method="GET">
     {{form|crispy}}
     <input class="btn btn-primary mybutton" type="submit" value="Search"/>
 
@@ -54,7 +54,35 @@
     
     
 </table>
-</div><!---end of col-->>
-</div><!--end of row-->>
+<div class="pagination mt-3">
+
+    {% with request.GET.urlencode as query_string %}
+
+    {% if queryset.has_previous %}
+    <a href="?{{ query_string }}&page=1"
+        class="btn btn-sm btn-outline-primary">First</a>
+       
+
+     <a href="?{{ query_string }}&page={{ queryset.previous_page_number }}"
+           class="btn btn-sm btn-outline-primary">&#8592Previous</a>
+   
+       
+{% endif %}
+
+<span class="mx-2">
+    Page {{ queryset.number }} of {{ queryset.paginator.num_pages }}
+</span>
+
+   {% if queryset.has_next %}
+        <a href="?{{ query_string }}&page={{ queryset.next_page_number }}"
+           class="btn btn-sm btn-outline-primary">&#8594Next</a>
+
+        <a href="?{{ query_string }}&page={{ queryset.paginator.num_pages }}"
+           class="btn btn-sm btn-outline-primary">Last</a>
+    {% endif %}
+
+    {% endwith %}
+</div><!---end of col-->
+</div><!--end of row-->
 </div>
 {% endblock content%}
